@@ -4,8 +4,8 @@ const app = express();
 import cors from "cors";
 import middleware from "./utils/middleware.js";
 import logger from "./utils/logger.js";
-
 import mongoose from "mongoose";
+import usersRouter from "./controllers/userRouter.js";
 
 mongoose.set("strictQuery", false);
 
@@ -24,6 +24,8 @@ app.use(cors());
 app.use(express.static("dist"));
 app.use(express.json());
 app.use(middleware.requestLogger);
+
+app.use("/api/users", usersRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
