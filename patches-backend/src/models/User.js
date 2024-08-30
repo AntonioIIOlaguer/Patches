@@ -12,10 +12,12 @@ const schema = new mongoose.Schema({
   name: String,
   passwordHash: String,
 
-  patches: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Patch",
-  },
+  patches: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Patch",
+    },
+  ],
 });
 
 schema.plugin(uniqueValidator);

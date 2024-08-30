@@ -5,7 +5,7 @@ import cors from "cors";
 import middleware from "./utils/middleware.js";
 import logger from "./utils/logger.js";
 import mongoose from "mongoose";
-import usersRouter from "./controllers/userRouter.js";
+import usersRouter from "./controllers/usersRouter.js";
 
 mongoose.set("strictQuery", false);
 
