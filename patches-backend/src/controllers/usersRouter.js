@@ -23,7 +23,7 @@ usersRouter
           name: "ValidationError",
           message: "Password Too short. Minimum of 8 characters",
         };
-        return next(error);
+        throw error;
       }
       const saltRounds = 10;
       const passwordHash = await bcrypt.hash(password, saltRounds);
