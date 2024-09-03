@@ -6,6 +6,8 @@ import middleware from "./utils/middleware.js";
 import logger from "./utils/logger.js";
 import mongoose from "mongoose";
 import usersRouter from "./controllers/usersRouter.js";
+import patchesRouter from "./controllers/patchesRouter.js";
+import loginRouter from "./controllers/loginRouter.js";
 
 app.use(cors());
 app.use(express.static("dist"));
@@ -27,6 +29,8 @@ mongoose
 //Establish routes
 app.use(middleware.tokenExtractor);
 app.use("/api/users", usersRouter);
+app.use("/api/patches", patchesRouter);
+app.use("/api/login", loginRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

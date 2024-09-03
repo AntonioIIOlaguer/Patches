@@ -14,22 +14,18 @@ patchesRouter
     response.json(patches);
   })
 
-  .post(middleware.userExtractor, async (request, response) => {
+  // .post(middleware.userExtractor, async (request, response) => {
+  .post(async (request, response) => {
     logger.info("Posting new patch...");
     const newPatch = request.body;
-    const user = await User.findById(request.user.id);
+    const user = await User.findById(newPatch.user);
 
     const patch = new Patch({
       ...newPatch,
-      user: user.id,
+      // user: user.id,
     });
 
-    const savedPatch = await Patch.save();
-    await patch.populate("user", {
-      username: 1,
-      name: 1,
-      id: 1,
-    });
+    const savedPatch = await patch.save();
 
     user.patches = user.patches.concat(savedPatch.id);
     await user.save();
@@ -51,7 +47,7 @@ patchesRouter
         .json({ error: "User has no access to delete resource" });
     }
 
-    //delete the blog reference in user
+    //delete the patch reference in user
     await User.findByIdAndUpdate(request.user.id, {
       $pull: { patches: request.params.id },
     });

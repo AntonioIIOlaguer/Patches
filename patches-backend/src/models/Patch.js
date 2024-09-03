@@ -7,7 +7,7 @@ const schema = new mongoose.Schema({
   },
 
   fullResUrl: String,
-  ThumbnailResUrl: String,
+  thumbnailResUrl: String,
 });
 
-export default { Patch: mongoose.model("Patch", schema) };
+export default mongoose.model("Patch", schema);
