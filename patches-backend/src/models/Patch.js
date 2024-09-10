@@ -6,6 +6,8 @@ const schema = new mongoose.Schema({
     ref: "User",
   },
 
+  date: { type: Date, default: Date.now },
+
   fullResUrl: String,
   thumbnailResUrl: String,
 });

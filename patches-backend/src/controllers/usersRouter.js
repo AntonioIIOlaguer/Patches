@@ -6,17 +6,17 @@ const usersRouter = express.Router();
 
 usersRouter
   .route("/")
-  .get(async (request, response) => {
+  .get(async (req, res) => {
     //Find all users
     console.log("Finding user");
     const users = await User.find({});
-    response.status(200).json(users);
+    res.status(200).json(users);
   })
 
-  .post(async (request, response, next) => {
+  .post(async (req, res, next) => {
     //Register User
     try {
-      const { username, name, password } = request.body;
+      const { username, name, password } = req.body;
 
       if (password.length < 8) {
         const error = {
@@ -34,9 +34,9 @@ usersRouter
         passwordHash,
       });
       const savedUser = await user.save();
-      response.status(201).json(savedUser);
+      res.status(201).json(savedUser);
     } catch (error) {
-      return next(error);
+      next(error);
     }
   });
 export default usersRouter;

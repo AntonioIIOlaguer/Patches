@@ -6,10 +6,10 @@ import jwt from "jsonwebtoken";
 
 const loginRouter = express.Router();
 
-loginRouter.post("/", async (request, response, next) => {
-  logger.info(`Logging in ${request.body.username}`);
+loginRouter.post("/", async (req, res, next) => {
+  logger.info(`Logging in ${req.body.username}`);
   try {
-    const { username, password } = request.body;
+    const { username, password } = req.body;
 
     const user = await User.findOne({ username });
     // check if user exist and compare pass
@@ -37,7 +37,7 @@ loginRouter.post("/", async (request, response, next) => {
     });
 
     logger.info(`Login succesful for ${user.username}`);
-    response
+    res
       .status(200)
       .send({ token, username: user.username, name: user.name, id: user._id });
   } catch (error) {

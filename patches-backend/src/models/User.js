@@ -9,8 +9,10 @@ const schema = new mongoose.Schema({
     minlength: 3,
   },
 
-  name: String,
+  name: { type: String, required: true },
   passwordHash: String,
+
+  date: { type: Date, default: Date.now },
 
   patches: [
     {
@@ -21,5 +23,11 @@ const schema = new mongoose.Schema({
 });
 
 schema.plugin(uniqueValidator);
+schema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    delete returnedObject.__v;
+    delete returnedObject.passwordHash;
+  },
+});
 
 export default mongoose.model("User", schema);

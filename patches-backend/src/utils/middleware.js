@@ -1,54 +1,65 @@
+import morgan from "morgan";
 import logger from "./logger.js";
 import jwt from "jsonwebtoken";
 
-const requestLogger = (request, response, next) => {
-  logger.info("Method:", request.method);
-  logger.info("Path:  ", request.path);
-  logger.info("Body:  ", request.body);
-  logger.info("---");
-  next();
+//Capture the req Body
+morgan.token("body", function getBody(req) {
+  return JSON.stringify(req.body);
+});
+
+const requestLogger = morgan(
+  ":method :url :status :response-time ms - :res[content-length] :body",
+  { skip: (req, res) => process.env.NODE_ENV == "test" },
+);
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: "unknown endpoint" });
 };
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint" });
-};
-
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, req, res, next) => {
   logger.error(error.message);
 
   switch (error.name) {
     case "CastError":
-      return response.status(400).send({ error: "malformatted id" });
+      return res.status(400).send({ error: "malformatted id" });
 
     case "ValidationError":
-      return response.status(400).json({ error: error.message });
+      return res.status(400).json({ error: error.message });
 
     default:
-      return response.status(error.code).json({ error: error.message });
+      return res.status(error.code).json({ error: error.message });
   }
 };
 
 //Gets token and assigns it to request.token
-const tokenExtractor = (request, response, next) => {
-  const authorization = request.get("authorization");
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get("authorization");
   if (authorization && authorization.startsWith("Bearer ")) {
-    request.token = authorization.replace("Bearer ", "");
+    req.token = authorization.replace("Bearer ", "");
   }
   next();
 };
 
-//Decodes the Token and sets User to request.user
-const userExtractor = async (request, response, next) => {
-  // Verifying token returns object which token was based on
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  //If the token is missing or it is invalid, the exception _JsonWebTokenError_ is raised.
+const userExtractor = async (req, res, next) => {
+  //Decodes the Token and sets User to request.user
+  try {
+    // Verifying token returns object which token was based on
+    const decodedToken = jwt.verify(req.token, process.env.SECRET);
 
-  //if decodedToken is undefined
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
+    //if decodedToken is undefined
+    if (!decodedToken.id) {
+      const error = {
+        code: 401,
+        name: "Unauthorized User",
+        message: "Invalid User or passsword",
+      };
+      throw error;
+    }
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    next(error);
   }
-  request.user = decodedToken;
-  next();
 };
 
 export default {
