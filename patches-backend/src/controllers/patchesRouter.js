@@ -20,7 +20,6 @@ patchesRouter
       const newPatch = req.body;
       const user = await User.findById(req.user.id);
 
-      logger.info(user);
       const patch = new Patch({
         ...newPatch,
         user: user.id,
@@ -28,6 +27,7 @@ patchesRouter
 
       const savedPatch = await patch.save();
 
+      //Add patches ref to User
       user.patches = user.patches.concat(savedPatch.id);
       await user.save();
 
@@ -39,8 +39,8 @@ patchesRouter
 
 patchesRouter
   .route("/:id")
-  .get(async (request, response) => {
-    response.status(201);
+  .get(async (req, res) => {
+    res.status(201);
   })
   .delete(middleware.userExtractor, async (request, response) => {
     logger.info("Deleting patch...");
