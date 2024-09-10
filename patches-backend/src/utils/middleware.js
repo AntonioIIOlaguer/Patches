@@ -25,7 +25,6 @@ const errorHandler = (error, request, response, next) => {
 
     default:
       return response.status(error.code).json({ error: error.message });
-      next(error);
   }
 };
 
